@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  spark-master:
+    image: docker.io/bitnami/spark:3.0.1
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+  spark-worker-1:
+    image: docker.io/bitnami/spark:3.0.1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ./data:/home/ubuntu
+    ports:
+      - '8081:8081'
+  clickhouse:
+    image: yandex/clickhouse-server:20.4
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    cpu_count: 2
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 2G
+  vertica:
+    image: jbfavre/vertica:latest
+    ports:
+      - "5433:5433"
+    cpu_count: 2
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 2G
+  jupyter:
+    build: ./
+    ports:
+      - '8888:8888'
+    volumes:
+      - ./data:/home/ubuntu

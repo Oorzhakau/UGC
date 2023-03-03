@@ -1,0 +1,164 @@
+version: "3.8"
+
+services:
+
+  auth_service:
+    build:
+      context: auth_app/.
+      dockerfile: Dockerfile
+    depends_on:
+      - auth_redis
+      - auth_postgres
+    expose:
+      - $AUTH_PROJECT_PORT
+    env_file:
+      - .env
+    restart: always
+
+  auth_redis:
+    image: redis:6.2.6
+    env_file:
+      - .env
+    volumes:
+      - auth_redis_src:/auth_app/redis/data
+    expose:
+      - $AUTH_REDIS_PORT
+    restart: always
+
+  auth_postgres:
+    image: postgres:15.1-alpine
+    env_file:
+      - .env
+    volumes:
+      - $HOME/postgresql/users:/var/lib/postgresql/users
+    expose:
+      - $AUTH_POSTGRES_DB_PORT
+    environment:
+      POSTGRES_DB: ${AUTH_POSTGRES_DB}
+      POSTGRES_USER: ${AUTH_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      POSTGRES_DB_HOST: ${AUTH_POSTGRES_DB_HOST}
+      POSTGRES_DB_PORT: ${AUTH_POSTGRES_DB_PORT}
+    restart: always
+
+  ugc_service:
+    build:
+      context: ugc_app/.
+    env_file:
+      - .env
+    expose:
+      - $UGC_PROJECT_PORT
+    depends_on:
+      - kafka_zookeeper
+      - kafka_broker
+    restart: always
+
+  nginx:
+    image: nginx:1.23.1-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/configs:/etc/nginx/conf.d:ro
+    depends_on:
+      - auth_service
+      - ugc_service
+    ports:
+      - "80:80"
+
+  kafka_zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    expose:
+      - $UGC_ZOOKEPEER_PORT
+
+  kafka_broker:
+    image: confluentinc/cp-kafka:7.3.0
+    expose:
+      - $KAFKA_BROKER_EXTERNAL_PORT
+    depends_on:
+      - kafka_zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "kafka_zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka_broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    depends_on:
+      - kafka_broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka_broker:29092 --list
+      
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka_broker:29092 --create --if-not-exists --topic views --replication-factor 1 --partitions 1
+      
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka_broker:29092 --list
+      "
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    depends_on:
+      - nginx
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+
+  clickhouse-node1:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    expose:
+      - $CLICKHOUSE_PORT_BASE
+      - $CLICKHOUSE_PORT_ZOOKEPEER
+    volumes:
+      - ./olap_storage/clickhouse/data/node1:/etc/clickhouse-server
+    depends_on:
+      - kafka_zookeeper
+
+  clickhouse-node2:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    volumes:
+      - ./olap_storage/clickhouse/data/node2:/etc/clickhouse-server
+    depends_on:
+      - kafka_zookeeper
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    volumes:
+      - ./olap_storage/clickhouse/data/node3:/etc/clickhouse-server
+    depends_on:
+      - kafka_zookeeper
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    volumes:
+      - ./olap_storage/clickhouse/data/node4:/etc/clickhouse-server
+    depends_on:
+      - kafka_zookeeper
+
+  ugc_etl:
+    build:
+      context: ./etl_olap
+    env_file:
+      - .env
+    depends_on:
+      - ugc_service
+      - clickhouse-node1
+
+volumes:
+  auth_redis_src:

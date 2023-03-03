@@ -1,0 +1,6 @@
+clickhouse-driver==0.2.5
+pydantic
+python-dotenv
+kafka-python==2.0.2
+pyspark==3.0.1
+vertica-python
