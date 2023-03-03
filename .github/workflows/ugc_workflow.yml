@@ -27,13 +27,13 @@ jobs:
         mkdir -p reports/mypy_reports/
         mkdir -p reports/flake8_reports/
     
-    - name: Lint with mypy
+    - name: Lint with mypy ugc_app
       run: |
-          mypy . -ignore-missing-imports --html-report reports/mypy_reports/
-          
+          mypy --html-report reports/mypy_reports/ugc_app ugc_app/*.py ugc_app/src/**/*.py
+
     - name: Lint with flake8
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --max-line-length=127 --show-source --statistics
+        flake8 . --config=setup.cfg --show-source --statistics
     
     - name: Upload reports
       uses: actions/upload-artifact@v3.1.0

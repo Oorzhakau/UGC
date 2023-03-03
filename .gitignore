@@ -1,0 +1,7 @@
+__pycache__/
+.idea/
+.env
+config.ini
+.pytest_cache/
+.ipynb*
+*.csv

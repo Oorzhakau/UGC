@@ -1,0 +1,6 @@
+clickhouse-driver==0.2.5
+backoff==2.2.1
+pydantic==1.10.2
+python-dotenv==0.21.0
+aiokafka==0.8.0
+kafka-python==2.0.2

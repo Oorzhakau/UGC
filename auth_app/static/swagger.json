@@ -1,0 +1,1013 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Auth service",
+    "description": "Service Auth",
+    "contact": {
+      "email": "oorzhakau@yandex.ru"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Authorization and authentication"
+    },
+    {
+      "name": "Roles",
+      "description": "About user roles"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get users",
+        "description": "Get users (only if you admin)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "number if page",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "number users in page",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/users/{users_id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Find user by ID",
+        "description": "Returns a single user (only if you admin)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "users_id",
+            "in": "path",
+            "description": "ID of user to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/{users_id}/roles": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Add roles for user",
+        "description": "Add roles for user (only if you admin)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "users_id",
+            "in": "path",
+            "description": "ID of user to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Add roles from user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolesName"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete role for user",
+        "description": "Delete role for user (only if you admin)",
+        "operationId": "deleteUserRole",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "users_id",
+            "in": "path",
+            "description": "ID of user to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Remove role from user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolesName"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Registration new user",
+        "description": "Registrate new uesr",
+        "requestBody": {
+          "description": "Registrate new user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Registration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "validation error (if correct was very simple or confirm pass not match with pass)"
+          },
+          "409": {
+            "description": "Username is already exists"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Logs user into the system",
+        "description": "",
+        "requestBody": {
+          "description": "Status values that need to be considered for filter",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Logs out current logged in user session",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/users/logout/all": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Logs out all users logged in session",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Revoked all refresh tokens"
+          }
+        }
+      }
+    },
+    "/users/refresh": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Refresh access and refresh jwt tokens",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/users/password": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Change password",
+        "requestBody": {
+          "description": "Change password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Passwords"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful password change"
+          },
+          "401": {
+            "description": "Invalid password"
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/users/history": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get account history",
+        "description": "Returns a single user (only if you admin)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Change password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pagination"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get account",
+        "description": "Returns account",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get account",
+        "description": "Returns account",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Change password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Account"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/users/verification_roles": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get roles from correct jwt-token",
+        "description": "Returns roles",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserReduce"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Get roles",
+        "description": "Returns roles",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Roles"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Create role",
+        "description": "Create role",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Create role",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role was created"
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/roles/{role_id}": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Get role by id",
+        "description": "Returns role",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "path",
+            "required": true,
+            "description": "ID of role to return",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Create role",
+        "description": "Create role",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "role_id",
+            "in": "path",
+            "description": "ID of user to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Patch role",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Role"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role was created"
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    },
+    "/oauth/yandex/login": {
+      "get": {
+        "tags": [
+          "OAuth"
+        ],
+        "summary": "Login by yandex account",
+        "description": "Registrate by yandex account",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuth"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/oauth/google/login": {
+      "get": {
+        "tags": [
+          "OAuth"
+        ],
+        "summary": "Login by yandex account",
+        "description": "Registrate by yandex account",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuth"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Users": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "pages": {
+            "type": "number"
+          },
+          "prev_page": {
+            "type": "boolean"
+          },
+          "next_page": {
+            "type": "boolean"
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "Registration": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "name account",
+            "example": "student"
+          },
+          "password": {
+            "type": "string",
+            "description": "password",
+            "example": "qwerty"
+          },
+          "confirm_password": {
+            "type": "string",
+            "description": "password",
+            "example": "qwerty"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "name account",
+            "example": "student"
+          },
+          "password": {
+            "type": "string",
+            "description": "password",
+            "example": "qwerty"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "string",
+            "example": "38e04d12-2d9f-40ff-9bdc-5be916713cd6"
+          },
+          "name": {
+            "type": "string",
+            "example": "John"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@email.com"
+          },
+          "username": {
+            "type": "string",
+            "example": "theUser"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          }
+        }
+      },
+      "UserReduce": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "string",
+            "example": "38e04d12-2d9f-40ff-9bdc-5be916713cd6"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "extended",
+              "base"
+            ]
+          }
+        }
+      },
+      "OAuth": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "string",
+            "example": "https://oauth.yandex.com/authorize?response_type=code&client_id=3149424212345&redirect_uri=http%3A%2F%2F127.0.0.1%2Foauth%2Fyandex%2Fcallback&state=9OXPPAtoz41234yxbKEzBJ7We"
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "Ksusha"
+          },
+          "email": {
+            "type": "string",
+            "format": "string",
+            "example": "kkl@mail.com"
+          }
+        }
+      },
+      "RolesName": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "example": "admin"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "grant all privileges"
+          },
+          "id": {
+            "type": "string",
+            "example": "2e0c64fb-0513-4d66-8567-ff5d088f4312"
+          },
+          "name": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "RoleCreate": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "grant all privileges"
+          },
+          "name": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "Roles": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Role"
+        }
+      },
+      "Tokens": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3MTMxNzExNiwianRpIjoiOGY2YjUyNzgtOTI0Ny00MDEzLWJlNzUtYTAwOWMwYWRlYWVmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VyX2lkIjoiN2YwNDliZmQtYWU3Ny00OTZhLTg3N2EtNDkyMTAxMjM4MDlhIn0sIm5iZiI6MTY3MTMxNzExNiwiZXhwIjoxNjcxMzE3NzE2LCJ1c2VyX2lkIjoiN2YwNDliZmQtYWU3Ny00OTZhLTg3N2EtNDkyMTAxMjM4MDlhIiwicm9sZXMiOlsiYWRtaW4iXSwidXNlcm5hbWUiOiJhZG1pbiJ9.uLh89FEgXmdGT3aIBydPktUq_qM5Y3KWgS9EnRC094g"
+          },
+          "refresh_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3MTMxNzExNiwianRpIjoiNGUwNDY0ZjUtMzM3Yy00NjRiLTlkZjgtMjMzOGYwOWEyZTBjIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOnsidXNlcl9pZCI6IjdmMDQ5YmZkLWFlNzctNDk2YS04NzdhLTQ5MjEwMTIzODA5YSJ9LCJuYmYiOjE2NzEzMTcxMTYsImV4cCI6MTY3MzkwOTExNiwidXNlcl9pZCI6IjdmMDQ5YmZkLWFlNzctNDk2YS04NzdhLTQ5MjEwMTIzODA5YSIsInJvbGVzIjpbImFkbWluIl0sInVzZXJuYW1lIjoiYWRtaW4ifQ.xATpNWkGRApsQDpTKmSkpLUjxgw3WjBsyb0V4pWrcNY"
+          }
+        }
+      },
+      "Passwords": {
+        "type": "object",
+        "properties": {
+          "curr_password": {
+            "type": "string",
+            "format": "string",
+            "example": "curr_password"
+          },
+          "new_password": {
+            "type": "string",
+            "example": "new_password"
+          },
+          "confirm_password": {
+            "type": "string",
+            "example": "new_password"
+          }
+        }
+      },
+      "Action": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "string",
+            "example": "2f5ea822-d881-4a30-aec2-87fb0e1e86d5"
+          },
+          "created": {
+            "type": "string",
+            "format": "datetime",
+            "example": "2022-12-13T23:34:51.803227"
+          },
+          "user_agent": {
+            "type": "string",
+            "format": "string",
+            "example": "Postman Desktop"
+          },
+          "device": {
+            "type": "string",
+            "format": "string",
+            "example": "phone"
+          },
+          "action": {
+            "type": "string",
+            "format": "string",
+            "example": "signin"
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "pages": {
+            "type": "number"
+          },
+          "prev_page": {
+            "type": "boolean"
+          },
+          "next_page": {
+            "type": "boolean"
+          },
+          "has_next": {
+            "type": "boolean"
+          },
+          "has_prev": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            }
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "per_page": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
