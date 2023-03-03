@@ -1,5 +1,6 @@
 import os
 from logging import config as logging_config
+from typing import Optional
 
 from dotenv import find_dotenv
 from pydantic import BaseSettings, Field
@@ -31,7 +32,7 @@ class Settings(BaseSettings):
 
     TOPIC_VIEWS = "views"
 
-    UGC_DSC: str | None = Field(env="UGC_DSC")
+    UGC_DSC: Optional[str] = Field(env="UGC_DSC")
 
     class Config:
         env_file = find_dotenv(filename=".env", usecwd=True)
