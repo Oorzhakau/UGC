@@ -5,3 +5,5 @@ config.ini
 .pytest_cache/
 .ipynb*
 *.csv
+.mypy_cache
+reports/
