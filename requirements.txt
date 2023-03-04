@@ -7,3 +7,4 @@ mypy-extensions==1.0.0
 py==1.11.0
 pyasn1==0.4.8
 pycodestyle==2.10.0
+wemake-python-styleguide=0.17.0
