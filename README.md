@@ -1,5 +1,5 @@
 # Проектная работа 9 спринта
-[![UGC workflow](https://github.com/Oorzhakau/ugc_sprint_2/workflows/UGC-workflow/badge.svg?branch=main&event=push)](https://github.com/Oorzhakau/ugc_sprint_2/actions/workflows/ugc_workflow.yml)
+![UGC workflow](https://github.com/Oorzhakau/ugc_sprint_2/workflows/UGC-workflow/badge.svg)
 
 Ссылка на репозиторий:
 https://github.com/Oorzhakau/ugc_sprint_2
