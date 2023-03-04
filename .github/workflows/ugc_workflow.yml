@@ -1,4 +1,4 @@
-name: UGC workflow
+name: UGC-workflow
 
 on:
   pull_request:
