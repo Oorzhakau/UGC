@@ -1,6 +1,4 @@
-"""
-Base Service class handling UGC Events
-"""
+"""Base Service class handling UGC Events."""
 import abc
 from typing import Any
 

@@ -33,15 +33,13 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        flake8 . --config=setup.cfg --show-source --statistics
+        flake8 . --config=setup.cfg --exit-zero --format=html --htmldir=reports/flake8_reports/ugc_app/
     
     - name: Upload reports
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: CI report
+        name: CI reports
         path: reports/
-        if-no-files-found: warn
-        retention-days: 1 
     
   notify:
     runs-on: ubuntu-latest

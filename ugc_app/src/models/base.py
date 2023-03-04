@@ -1,6 +1,4 @@
-"""
-Base UGC model storage
-"""
+"""Base UGC model storage."""
 from datetime import datetime
 
 import orjson
@@ -10,7 +8,7 @@ from src.models import utility
 
 
 class BaseOrjsonModel(BaseModel):
-    """Base Model supporting orjson"""
+    """Base Model supporting orjson."""
 
     class Config:
         json_loads = orjson.loads
