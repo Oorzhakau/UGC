@@ -4,6 +4,18 @@
 Ссылка на репозиторий:
 https://github.com/Oorzhakau/ugc_sprint_2
 
+## Технологии
+* UGC API приложение - FastApi
+* Хранилище данных - MongoDB
+* Транзакционная система (OLTP) - Kafka
+* Система интерактивной аналитической обработки (OLAP) - Clickhouse
+* Система логгирования - ELK (Elasticsearch, Logstash, Kibana)
+* Сборщик ошибок - Sentry
+* Docker-compose
+
+## Задания
+* reseach/storage_research/research.ipynb - исследование по выбору хранилища данных по закладкам, лайкам и просмотрам
+
 ## Запуск проекта
 1. Заполнить `.env` по шаблону `.env_example`. При debug проекта **auth_app**
 в директории auth_app также заполнить `.env`

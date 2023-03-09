@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  psql:
+    image: postgres:13
+    volumes:
+      - ./psql/ugc_db.sql:/docker-entrypoint-initdb.d/ugc_db.sql
+    environment:
+      - POSTGRES_DB=ugc_db
+      - POSTGRES_USER=psql
+      - POSTGRES_PASSWORD=qwe123
+    ports:
+      - "5432:5432"
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+  jupyter:
+    image: jupyter/minimal-notebook:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./src:/home/jovyan/work/
+

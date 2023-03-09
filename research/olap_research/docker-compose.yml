@@ -55,4 +55,4 @@ services:
     ports:
       - '8888:8888'
     volumes:
-      - ./data:/home/ubuntu
+      - ./src:/home/ubuntu

@@ -69,6 +69,8 @@ yarl = "1.8.2"
 sentry-sdk = {extras = ["fastapi"], version = "^1.16.0"}
 mypy = "^1.0.1"
 lxml = "^4.9.2"
+pymongo = "^4.3.3"
+tqdm = "^4.65.0"
 
 
 [build-system]

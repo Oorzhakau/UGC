@@ -1,0 +1,24 @@
+{
+    "mongo": {
+        "fake_movie_bookmarks": 1.1342878341674805,
+        "fake_movie_bookmarks_read": 0.6438698053359986,
+        "fake_movie_bookmarks_read_load": 0.7745741367340088,
+        "fake_movie_likes": 1.3336148977279663,
+        "fake_movie_likes_read": 0.6684442520141601,
+        "fake_movie_likes_read_load": 0.7780178546905517,
+        "fake_movie_reviews": 1.4179596900939941,
+        "fake_movie_reviews_read": 0.7365741491317749,
+        "fake_movie_reviews_read_load": 0.870538330078125
+    },
+    "postgres": {
+        "fake_movie_bookmarks": 4.28646399974823,
+        "fake_movie_bookmarks_read": 0.008490490913391113,
+        "fake_movie_bookmarks_read_load": 0.07726247310638427,
+        "fake_movie_likes": 4.8035348653793335,
+        "fake_movie_likes_read": 0.00990300178527832,
+        "fake_movie_likes_read_load": 0.08154492378234864,
+        "fake_movie_reviews": 5.744302678108215,
+        "fake_movie_reviews_read": 0.00955514907836914,
+        "fake_movie_reviews_read_load": 0.1014859676361084
+    }
+}

@@ -1,0 +1,7 @@
+pandas
+pydantic
+python-dotenv
+psycopg2-binary
+Faker
+pymongo
+matplotlib
