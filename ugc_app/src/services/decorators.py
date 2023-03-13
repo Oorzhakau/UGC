@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 import aiohttp
 from fastapi import Request, HTTPException
+from starlette.requests import Message
 
 from src.core.config import settings
 
@@ -21,7 +22,7 @@ async def auth_request(session, token):
 
 
 def access_check(
-    assigned_roles: list[str] = settings.ROLES,
+        assigned_roles: list[str] = settings.ROLES,
 ):
     """A decorator for check access to api handler."""
 
@@ -45,7 +46,12 @@ def access_check(
                     status_code=HTTPStatus.FORBIDDEN,
                     detail="You don't have permissions for this api method",
                 )
-            data = await fn(Request(scope, response["body"]["user_id"]), **kwargs)
+
+            async def get_body() -> dict:
+                body = response["body"]
+                return body
+
+            data = await fn(Request(scope, get_body), **kwargs)
             return data
 
         return decorated

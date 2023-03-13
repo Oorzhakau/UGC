@@ -19,8 +19,6 @@ services:
     image: redis:6.2.6
     env_file:
       - .env
-    volumes:
-      - auth_redis_src:/auth_app/redis/data
     expose:
       - $AUTH_REDIS_PORT
     restart: always
@@ -44,6 +42,11 @@ services:
   ugc_service:
     build:
       context: ugc_app/.
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: ugc_app
     env_file:
       - .env
     expose:
@@ -51,6 +54,7 @@ services:
     depends_on:
       - kafka_zookeeper
       - kafka_broker
+      - logstash
     restart: always
 
   nginx:
@@ -58,6 +62,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/configs:/etc/nginx/conf.d:ro
+      - /tmp/logs/nginx/:/var/log/nginx/
     depends_on:
       - auth_service
       - ugc_service
@@ -160,187 +165,50 @@ services:
       - ugc_service
       - clickhouse-node1
 
-  mongors1n1:
-    container_name: mongors1n1
+  mongo:
+    container_name: mongo
     image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017 --quiet --logpath /dev/null
+    expose:
+      - $UGC_STORAGE_PORT
+
+  logstash:
+    image: logstash:7.10.1
+    environment:
+      XPACK_MONITORING_ENABLED: "false"
+      ES_HOST: "elasticsearch:9200"
     ports:
-      - "27017:27017"
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/data1:/data/db
-
-  mongors1n2:
-    container_name: mongors1n2
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    ports:
-      - "27027:27017"
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/data2:/data/db
-
-  mongors1n3:
-    container_name: mongors1n3
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    ports:
-      - 27037:27017
-    expose:
-      - 27017
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/data3:/data/db
-
-  mongors2n1:
-    container_name: mongors2n1
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    ports:
-      - "27047:27017"
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/data4:/data/db
-
-  mongors2n2:
-    container_name: mongors2n2
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    ports:
-      - "27057:27017"
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/data5:/data/db
-
-  mongors2n3:
-    container_name: mongors2n3
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    ports:
-      - "27067:27017"
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/data6:/data/db
-
-  mongocfg1:
-    container_name: mongocfg1
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/config1:/data/db
-
-  mongocfg2:
-    container_name: mongocfg2
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    expose:
-      - "27017"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/config2:/data/db
-
-  mongocfg3:
-    container_name: mongocfg3
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017 --quiet --logpath /dev/null
-    expose:
-      - 27017
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /tmp/mongo_cluster/config3:/data/db
-
-  mongos1:
-    container_name: mongos1
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
+      - "5044:5044/udp"
     depends_on:
-      - mongocfg1
-      - mongocfg2
-    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017
-    ports:
-      - "27019:27017"
-    expose:
-      - "27017"
+      - elasticsearch
     volumes:
-      - /etc/localtime:/etc/localtime:ro
+      - ./deploy/logstash.conf:/config/logstash.conf:ro
+    command: logstash -f /config/logstash.conf
 
-  mongos2:
-    container_name: mongos2
-    image: mongo
-    profiles:
-      - mongo
-      - olap
-      - etl
-      - oltp
-    depends_on:
-      - mongocfg1
-      - mongocfg2
-    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017
-    ports:
-      - "27020:27017"
-    expose:
-      - "27017"
+  filebeat:
+    image: elastic/filebeat:7.17.5
+    command: filebeat -e -strict.perms=false
     volumes:
-      - /etc/localtime:/etc/localtime:ro
+      - /tmp/logs/nginx:/var/log/nginx:ro
+      - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - elasticsearch
+      - kibana
+      - nginx
+      - logstash
+
+  elasticsearch:
+    image: elasticsearch:7.17.5
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+    expose:
+      - $ELASTIC_PORT
+    volumes:
+      - /tmp/esdata:/tmp/elasticsearch/data
+
+  kibana:
+    image: kibana:7.17.5
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch

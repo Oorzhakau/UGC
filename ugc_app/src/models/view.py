@@ -1,4 +1,4 @@
-"""UGC Events models storage."""
+"""View model."""
 from src.models.base import UGCEvent
 
 

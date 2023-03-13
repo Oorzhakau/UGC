@@ -1,12 +1,11 @@
-from aiokafka import AIOKafkaProducer
+import sentry_sdk
+import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-import uvicorn
-import sentry_sdk
 
-from src.api.v1 import events
-from src.db import event_storage
+from src.api.v1 import bookmarks, likes, reviews, views
 from src.core.config import settings
+from src.db import kafka, mongo
 
 sentry_sdk.init(
     dsn=settings.UGC_DSC,
@@ -20,26 +19,22 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-app.include_router(
-    events.router,
-    prefix="/ugc/api/v1/views",
-    tags=["ugc"]
-)
-
 
 @app.on_event("startup")
 async def startup() -> None:
-    event_storage.event_producer = AIOKafkaProducer(
-        **{
-            'bootstrap_servers': '{}:{}'.format(settings.KAFKA_BROKER_HOST, settings.KAFKA_BROKER_PORT)
-        }
-    )
-    await event_storage.event_producer.start()
+    await kafka.init_producer()
+    await mongo.get_mongo()
 
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
-    await event_storage.event_producer.stop()
+    await kafka.event_producer.stop()
+
+
+app.include_router(bookmarks.router, prefix="/ugc/api/v1")
+app.include_router(likes.router, prefix="/ugc/api/v1")
+app.include_router(reviews.router, prefix="/ugc/api/v1")
+app.include_router(views.router, prefix="/ugc/api/v1")
 
 
 if __name__ == '__main__':

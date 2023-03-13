@@ -1,13 +1,8 @@
 import os
-from logging import config as logging_config
 from typing import Optional
 
 from dotenv import find_dotenv
 from pydantic import BaseSettings, Field
-
-from src.core.logger import LOGGING
-
-logging_config.dictConfig(LOGGING)
 
 
 class Settings(BaseSettings):
@@ -34,9 +29,33 @@ class Settings(BaseSettings):
 
     UGC_DSC: Optional[str] = Field(env="UGC_DSC")
 
+    LOGSTASH_HOST: str = "127.0.0.1"
+    LOGSTASH_PORT: int = 5044
+
+    UGC_STORAGE_HOST: str = "127.0.0.1"
+    UGC_STORAGE_PORT: int = 27017
+    UGC_STORAGE_DB: str = "ugc_db"
+
+    BOOKMARKS_COLLECTION_NAME: str = "movie_bookmarks"
+    REVIEWS_COLLECTION_NAME: str = "movie_reviews"
+    MOVIE_LIKES_COLLECTION_NAME: str = "movie_likes"
+    REVIEW_LIKES_COLLECTION_NAME: str = "review_likes"
+
     class Config:
         env_file = find_dotenv(filename=".env", usecwd=True)
         env_file_encoding = 'utf-8'
+
+    @property
+    def mongo_uri(self) -> str:
+        return f"mongodb://{self.UGC_STORAGE_HOST}:{self.UGC_STORAGE_PORT}"
+
+    def get_collections(self) -> list[str]:
+        return [
+            self.BOOKMARKS_COLLECTION_NAME,
+            self.REVIEWS_COLLECTION_NAME,
+            self.MOVIE_LIKES_COLLECTION_NAME,
+            self.REVIEW_LIKES_COLLECTION_NAME
+        ]
 
 
 settings = Settings()

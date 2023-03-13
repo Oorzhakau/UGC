@@ -4,6 +4,10 @@
 Ссылка на репозиторий:
 https://github.com/Oorzhakau/ugc_sprint_2
 
+## Описание проекта
+Сервис UGC (ugc_app) регистрирует время просмотра фильма пользователем, его лайки (возможно оценка от 0 до 10),
+рецензии, а также закладки для будущего просмотра.
+
 ## Технологии
 * UGC API приложение - FastApi
 * Хранилище данных - MongoDB
@@ -11,7 +15,7 @@ https://github.com/Oorzhakau/ugc_sprint_2
 * Система интерактивной аналитической обработки (OLAP) - Clickhouse
 * Система логгирования - ELK (Elasticsearch, Logstash, Kibana)
 * Сборщик ошибок - Sentry
-* Docker-compose
+* Инфраструктура развертывается docker-compose
 
 ## Задания
 * reseach/storage_research/research.ipynb - исследование по выбору хранилища данных по закладкам, лайкам и просмотрам
@@ -37,6 +41,7 @@ sudo docker-compose up --build
   * Сервис Auth `http://127.0.0.1/swagger/`
   * Сервис UGC `http://127.0.0.1/ugc/api/openapi`
   * Сервис трассера `http://127.0.0.1:16686/search`
+  * Сервис kibana `http://127.0.0.1:5601/`
 
 ## Выбор OLAP хранилищ
 Сравнение и выбор хранилища для аналитики приведено в `olap_research`. Для запуска окружения в ранее указанной

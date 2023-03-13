@@ -1,5 +1,5 @@
 """
-Service handling events regarding Film View History
+Service handling events regarding Film View History.
 """
 from functools import lru_cache
 
@@ -8,7 +8,7 @@ from fastapi import Depends
 
 from src.models import ViewEvent, ViewEventResponse
 from src.services.base import EventServicerAbstract, KafkaEventProducer
-from src.db.event_storage import get_producer
+from src.db.kafka import get_producer
 from src.core.config import settings
 
 

@@ -5,5 +5,5 @@ __all__ = [
     "BaseOrjsonModel"
 ]
 
-from src.models.ugs_events import ViewEventResponse, ViewEvent
+from src.models.view import ViewEventResponse, ViewEvent
 from src.models.base import UGCEvent, BaseOrjsonModel

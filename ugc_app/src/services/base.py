@@ -1,6 +1,5 @@
 """Base Service class handling UGC Events."""
 import abc
-from typing import Any
 
 from aiokafka import AIOKafkaProducer
 

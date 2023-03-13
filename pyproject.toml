@@ -71,7 +71,12 @@ mypy = "^1.0.1"
 lxml = "^4.9.2"
 pymongo = "^4.3.3"
 tqdm = "^4.65.0"
+motor = "^3.1.1"
+python-logstash-async = "2.5.0"
 
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]
