@@ -116,54 +116,54 @@ services:
     ports:
       - "6831:6831/udp"
       - "16686:16686"
-
-  clickhouse-node1:
-    image: yandex/clickhouse-server:20.4
-    container_name: clickhouse-node1
-    hostname: clickhouse-node1
-    expose:
-      - $CLICKHOUSE_PORT_BASE
-      - $CLICKHOUSE_PORT_ZOOKEPEER
-    volumes:
-      - ./olap_storage/clickhouse/data/node1:/etc/clickhouse-server
-    depends_on:
-      - kafka_zookeeper
-
-  clickhouse-node2:
-    image: yandex/clickhouse-server:20.4
-    container_name: clickhouse-node2
-    hostname: clickhouse-node2
-    volumes:
-      - ./olap_storage/clickhouse/data/node2:/etc/clickhouse-server
-    depends_on:
-      - kafka_zookeeper
-
-  clickhouse-node3:
-    image: yandex/clickhouse-server:20.4
-    container_name: clickhouse-node3
-    hostname: clickhouse-node3
-    volumes:
-      - ./olap_storage/clickhouse/data/node3:/etc/clickhouse-server
-    depends_on:
-      - kafka_zookeeper
-
-  clickhouse-node4:
-    image: yandex/clickhouse-server:20.4
-    container_name: clickhouse-node4
-    hostname: clickhouse-node4
-    volumes:
-      - ./olap_storage/clickhouse/data/node4:/etc/clickhouse-server
-    depends_on:
-      - kafka_zookeeper
-
-  ugc_etl:
-    build:
-      context: ./etl_olap
-    env_file:
-      - .env
-    depends_on:
-      - ugc_service
-      - clickhouse-node1
+#
+#  clickhouse-node1:
+#    image: yandex/clickhouse-server:20.4
+#    container_name: clickhouse-node1
+#    hostname: clickhouse-node1
+#    expose:
+#      - $CLICKHOUSE_PORT_BASE
+#      - $CLICKHOUSE_PORT_ZOOKEPEER
+#    volumes:
+#      - ./olap_storage/clickhouse/data/node1:/etc/clickhouse-server
+#    depends_on:
+#      - kafka_zookeeper
+#
+#  clickhouse-node2:
+#    image: yandex/clickhouse-server:20.4
+#    container_name: clickhouse-node2
+#    hostname: clickhouse-node2
+#    volumes:
+#      - ./olap_storage/clickhouse/data/node2:/etc/clickhouse-server
+#    depends_on:
+#      - kafka_zookeeper
+#
+#  clickhouse-node3:
+#    image: yandex/clickhouse-server:20.4
+#    container_name: clickhouse-node3
+#    hostname: clickhouse-node3
+#    volumes:
+#      - ./olap_storage/clickhouse/data/node3:/etc/clickhouse-server
+#    depends_on:
+#      - kafka_zookeeper
+#
+#  clickhouse-node4:
+#    image: yandex/clickhouse-server:20.4
+#    container_name: clickhouse-node4
+#    hostname: clickhouse-node4
+#    volumes:
+#      - ./olap_storage/clickhouse/data/node4:/etc/clickhouse-server
+#    depends_on:
+#      - kafka_zookeeper
+#
+#  ugc_etl:
+#    build:
+#      context: ./etl_olap
+#    env_file:
+#      - .env
+#    depends_on:
+#      - ugc_service
+#      - clickhouse-node1
 
   mongo:
     container_name: mongo
@@ -172,20 +172,25 @@ services:
       - $UGC_STORAGE_PORT
 
   logstash:
-    image: logstash:7.10.1
+    image: docker.elastic.co/logstash/logstash:7.10.2
     environment:
+      XPACK_SECURITY_ENABLED: "false"
+      XPACK_REPORTING_ENABLE: "false"
       XPACK_MONITORING_ENABLED: "false"
       ES_HOST: "elasticsearch:9200"
     ports:
       - "5044:5044/udp"
+      - "5045:5045"
     depends_on:
       - elasticsearch
     volumes:
       - ./deploy/logstash.conf:/config/logstash.conf:ro
     command: logstash -f /config/logstash.conf
+    links:
+      - elasticsearch
 
   filebeat:
-    image: elastic/filebeat:7.17.5
+    image: docker.elastic.co/beats/filebeat:7.3.2
     command: filebeat -e -strict.perms=false
     volumes:
       - /tmp/logs/nginx:/var/log/nginx:ro
@@ -195,19 +200,21 @@ services:
       - kibana
       - nginx
       - logstash
+    links:
+      - logstash
+      - elasticsearch
 
   elasticsearch:
-    image: elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
-    expose:
-      - $ELASTIC_PORT
+    ports:
+      - "9200:9200"
     volumes:
       - /tmp/esdata:/tmp/elasticsearch/data
 
   kibana:
-    image: kibana:7.17.5
+    image: docker.elastic.co/kibana/kibana:7.10.2
     ports:
       - "5601:5601"
     depends_on:

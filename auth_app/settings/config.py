@@ -1,10 +1,4 @@
-from logging import config as logging_config
-
 from pydantic import BaseSettings, Field
-
-from core.logger import LOGGING
-
-logging_config.dictConfig(LOGGING)
 
 
 class Settings(BaseSettings):
@@ -53,6 +47,9 @@ class Settings(BaseSettings):
     PER_PAGE: int = 20
 
     RATE_LIMIT_REQ_PER_MIN: int = Field(20, env="RATE_LIMIT_REQ_PER_MIN")
+
+    LOGSTASH_HOST: str = Field("127.0.0.1", env="LOGSTASH_HOST")
+    LOGSTASH_PORT: int = 5044
 
     class Config:
         env_file = '.env.prod', '.env'

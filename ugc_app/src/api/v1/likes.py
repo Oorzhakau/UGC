@@ -1,10 +1,7 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import ORJSONResponse
 
 from src.models.like import MovieLikeEvent, ReviewLikeEvent, MovieLikeEventWithUser, ReviewLikeEventWithUser
-from src.models.review import ReviewEventWithUser
 from src.services.movie_like import LikeService, get_like_service
 from src.services.decorators import access_check
 from src.core.config import settings

@@ -4,7 +4,6 @@ This module contains the classes implement Cache.
 
 import abc
 import json
-from typing import Any
 import logging
 
 import backoff

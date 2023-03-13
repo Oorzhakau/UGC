@@ -33,10 +33,9 @@ class LikeService:
 
     async def add_movie_like(self, like: MovieLikeEventWithUser) -> MovieLikeEventWithUser:
         collection = self.db[settings.MOVIE_LIKES_COLLECTION_NAME]
-        await collection.delete_one(
-            {"movie_id": like.movie_id, "user_id": like.user_id}
+        await collection.find_one_and_replace(
+            {"movie_id": like.movie_id, "user_id": like.user_id}, like.dict(), upsert=True
         )
-        await collection.insert_one(like.dict())
         return like
 
     async def delete_movie_like(self, movie_id: str, user_id: str) -> None:

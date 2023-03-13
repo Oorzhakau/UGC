@@ -665,6 +665,14 @@ pycrypto = ["pyasn1", "pycrypto (>=2.6.0,<2.7.0)"]
 pycryptodome = ["pyasn1", "pycryptodome (>=3.3.1,<4.0.0)"]
 
 [[package]]
+name = "python-logstash"
+version = "0.4.8"
+description = "Python logging handler for Logstash."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "python-logstash-async"
 version = "2.5.0"
 description = "Asynchronous Python logging handler for Logstash."
@@ -937,7 +945,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "6aca04c71428036d5d16c0cb900341a99748eea1a0096200ef35a828689edf99"
+content-hash = "1cc234377168389ab4663f15229dc962a3e643244e85cf13c745ac11db6e5a30"
 
 [metadata.files]
 aiohttp = [
@@ -1993,6 +2001,9 @@ python-dotenv = [
 python-jose = [
     {file = "python-jose-3.3.0.tar.gz", hash = "sha256:55779b5e6ad599c6336191246e95eb2293a9ddebd555f796a65f838f07e5d78a"},
     {file = "python_jose-3.3.0-py2.py3-none-any.whl", hash = "sha256:9b1376b023f8b298536eedd47ae1089bcdb848f1535ab30555cd92002d78923a"},
+]
+python-logstash = [
+    {file = "python-logstash-0.4.8.tar.gz", hash = "sha256:d04e1ce11ecc107e4a4f3b807fc57d96811e964a554081b3bbb44732f74ef5f9"},
 ]
 python-logstash-async = [
     {file = "python-logstash-async-2.5.0.tar.gz", hash = "sha256:4d036bb0433cdedb5d040366bc4240b3e2c2436cdf860ef2f0e7dabee1cc1b44"},

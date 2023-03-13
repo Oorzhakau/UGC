@@ -1250,6 +1250,14 @@ python-versions = ">=3.7"
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "python-logstash"
+version = "0.4.8"
+description = "Python logging handler for Logstash."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pytz"
 version = "2022.7"
 description = "World timezone definitions, modern and historical"
@@ -1560,7 +1568,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "9da888a629d43f18e395cd3c9ca3cfb78a23f0f1a8f030163d51f77059617d8b"
+content-hash = "092f31dfb708b55d4f37a24ca1c9ad2dc8926179a05b396db0d31166d9afbd68"
 
 [metadata.files]
 aiohttp = [
@@ -2755,6 +2763,9 @@ python-dateutil = [
 python-dotenv = [
     {file = "python-dotenv-0.21.0.tar.gz", hash = "sha256:b77d08274639e3d34145dfa6c7008e66df0f04b7be7a75fd0d5292c191d79045"},
     {file = "python_dotenv-0.21.0-py3-none-any.whl", hash = "sha256:1684eb44636dd462b66c3ee016599815514527ad99965de77f43e0944634a7e5"},
+]
+python-logstash = [
+    {file = "python-logstash-0.4.8.tar.gz", hash = "sha256:d04e1ce11ecc107e4a4f3b807fc57d96811e964a554081b3bbb44732f74ef5f9"},
 ]
 pytz = [
     {file = "pytz-2022.7-py2.py3-none-any.whl", hash = "sha256:93007def75ae22f7cd991c84e02d434876818661f8df9ad5df9e950ff4e52cfd"},

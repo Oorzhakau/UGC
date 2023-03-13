@@ -1,8 +1,11 @@
+import logging
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import current_user, get_jwt, jwt_required
 from flask_pydantic import validate
 from pydantic import parse_obj_as
 
+from app import app
 from core.jwt_factory import get_jwt_instance
 from enumeration.errors import Errors
 from enumeration.roles import RolesEnum
@@ -17,6 +20,8 @@ from services.user_service import UserService, get_user_service
 
 users_v1 = Blueprint('users_v1', __name__, url_prefix='/users')
 jwt = get_jwt_instance()
+
+logger = logging.getLogger("auth_app")
 
 
 @jwt.token_in_blocklist_loader
@@ -51,6 +56,7 @@ def registration(body: UserSignUpScheme):
 @validate()
 @rate_limit
 def login(body: UserSignInScheme) -> TokensResponse:
+    app.logger.info("login")
     user = UserService.get_user_by_username(body.username)
     if not user:
         return Errors.user_not_found

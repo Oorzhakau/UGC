@@ -2,6 +2,7 @@ from flask import Flask, request
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
 from api.v1.routers import init_routes
+from core.logger import init_logstash
 from core.swagger_factory import swagger_factory
 from core.oauth import create_oauth
 from core.tracer import configure_tracer
@@ -59,4 +60,6 @@ def init_app(app: Flask) -> Flask:
         # tracer
         configure_tracer(app=app)
         FlaskInstrumentor().instrument_app(app)
+
+    app = init_logstash(app, settings)
     return app

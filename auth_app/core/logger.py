@@ -1,30 +1,26 @@
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-LOG_DEFAULT_HANDLERS = ['console', ]
+import logging
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': LOG_FORMAT
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': LOG_DEFAULT_HANDLERS,
-            'level': 'INFO',
-        },
-    },
-    'root': {
-        'level': 'INFO',
-        'formatter': 'verbose',
-        'handlers': LOG_DEFAULT_HANDLERS,
-    },
-}
+from flask import request
+from logstash import LogstashHandler
+
+LOG_FORMAT = 'auth_app:  %(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+
+class RequestIdFilter(logging.Filter):
+    def filter(self, record):
+        record.request_id = request.headers.get('X-Request-Id')
+        return True
+
+
+def init_logstash(app, settings):
+    logstash_handler = LogstashHandler(
+        settings.LOGSTASH_HOST,
+        int(settings.LOGSTASH_PORT),
+        version=1,
+        tags=["auth_app"]
+    )
+    logstash_handler.setLevel(logging.INFO)
+    logstash_handler.addFilter(RequestIdFilter())
+    app.logger.setLevel(logging.INFO)
+    app.logger.addHandler(logstash_handler)
+    return app

@@ -1,9 +1,6 @@
-from src.core.config import settings
-
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOG_FORMAT = "ugc_app: %(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOG_DEFAULT_HANDLERS = [
     "console",
-    "logstash",
 ]
 
 LOGGING = {
@@ -21,15 +18,6 @@ LOGGING = {
             "fmt": "%(levelprefix)s %(client_addr)s - "
                    "'%(request_line)s' %(status_code)s",
         },
-        "logstash": {
-            "()": "logstash_async.formatter.LogstashFormatter",
-            "message_type": "python-logstash",
-            "fqdn": False,
-            "extra_prefix": "dev",
-            "extra": {
-                "environment": "prod",
-            },
-        },
     },
     "handlers": {
         "console": {
@@ -46,17 +34,6 @@ LOGGING = {
             "formatter": "access",
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stdout",
-        },
-        "logstash": {
-            "level": "INFO",
-            "class": "logstash_async.handler.AsynchronousLogstashHandler",
-            "formatter": "logstash",
-            "transport": "logstash_async.transport.UdpTransport",
-            "host": settings.LOGSTASH_HOST,
-            "port": settings.LOGSTASH_PORT,
-            "ssl_enable": False,
-            "ssl_verify": False,
-            "database_path": "./logstash.db",
         },
     },
     "loggers": {

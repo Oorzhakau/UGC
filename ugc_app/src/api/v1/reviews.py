@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request, status, Query
 
 from src.models.review import ReviewEvent, ReviewEventWithUser, ReviewEventComplete
 from src.services.movie_review import ReviewService, get_review_service
@@ -42,8 +42,8 @@ async def add_review(
 async def get_reviews(
         request: Request,
         movie_id: str,
-        page_size: int = 0,
-        page_number: int = 10,
+        page_size: int = Query(default=20, alias="page[size]"),
+        page_number: int = Query(default=1, alias="page[number]"),
         service: ReviewService = Depends(get_review_service),
 ) -> List[ReviewEventComplete]:
     return await service.get_reviews(page_size, page_number, movie_id)
@@ -60,8 +60,8 @@ async def get_reviews(
 async def get_reviews(
         request: Request,
         user_id: str,
-        page_size: int = 0,
-        page_number: int = 10,
+        page_size: int = Query(default=20, alias="page[size]"),
+        page_number: int = Query(default=1, alias="page[number]"),
         service: ReviewService = Depends(get_review_service),
 ) -> List[ReviewEventComplete]:
     return await service.get_user_reviews(page_size, page_number, user_id)
