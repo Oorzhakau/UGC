@@ -15,10 +15,11 @@ https://github.com/Oorzhakau/ugc_sprint_2
 * Система интерактивной аналитической обработки (OLAP) - Clickhouse
 * Система логгирования - ELK (Elasticsearch, Logstash, Kibana)
 * Сборщик ошибок - Sentry
-* Инфраструктура развертывается docker-compose
+* Инфраструктура развертывается через docker-compose
 
 ## Задания
 * reseach/storage_research/research.ipynb - исследование по выбору хранилища данных по закладкам, лайкам и просмотрам
+* ugc_app - сервис для сохранения лайков, закладок и ревью пользователей.
 
 ## Запуск проекта
 1. Заполнить `.env` по шаблону `.env_example`. При debug проекта **auth_app**
@@ -29,7 +30,7 @@ sudo docker-compose up --build
 ```
 3. Для debug запустите выполните команду:
 ```bash
-sudo docker-compose -f docker-compose.dev.yml up --build
+sudo docker-compose -f docker-compose.yml up --build
 ```
 4. Запуск тестов (предварительно заполнить файл .env в папке ./tests/functional/)
 ```bash
@@ -42,12 +43,3 @@ sudo docker-compose up --build
   * Сервис UGC `http://127.0.0.1/ugc/api/openapi`
   * Сервис трассера `http://127.0.0.1:16686/search`
   * Сервис kibana `http://127.0.0.1:5601/`
-
-## Выбор OLAP хранилищ
-Сравнение и выбор хранилища для аналитики приведено в `olap_research`. Для запуска окружения в ранее указанной
-папке выполнить команду
-```bash
-docker-compose up --build
-```
-После запуска `jupyter` сервиса (в logs указан localhost:8888 с токеном), открыть `research.ipynb` ноутбук
-и ознакомиться с выполненным исследованием.
