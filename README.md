@@ -1,4 +1,4 @@
-# Проектная работа 9 спринта
+# Проектная работа UGC
 ![UGC workflow](https://github.com/Oorzhakau/ugc_sprint_2/workflows/UGC-workflow/badge.svg)
 
 Ссылка на репозиторий:
